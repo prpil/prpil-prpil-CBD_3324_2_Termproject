@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        .todo-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .todo-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .todo-list input[type="text"] {
+            flex: 1;
+            padding: 5px;
+        }
+
+        .todo-list button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+        }
+
+        .todo-list button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Todo List</h1>
+        <ul class="todo-list">
+            {% for todo in todos %}
+                <li>
+                    <span>{{ todo }}</span>
+                    <form action="/delete/{{ loop.index0 }}" method="post" style="display:inline;">
+                        <button type="submit">Delete</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+        <form action="/add" method="post" class="input-group mt-3">
+            <input type="text" name="todo" class="form-control" placeholder="Add new todo">
+            <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+    </div>
+</body>
+</html>

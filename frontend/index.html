@@ -2,99 +2,73 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple To-Do List</title>
+    <title>Todo List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
+            padding: 20px;
         }
-        input, button {
-            padding: 10px;
-            margin: 5px;
-            font-size: 16px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-        }
-        ul {
+
+        #todo-list {
             list-style-type: none;
+            padding: 0;
         }
-        li {
+
+        #todo-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #new-todo {
+            width: calc(100% - 60px);
             padding: 5px;
-            font-size: 18px;
         }
-        .delete {
-            color: red;
-            cursor: pointer;
+
+        #add-todo-btn {
+            width: 50px;
+            padding: 5px;
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1 class="mb-4">Todo List</h1>
+        <ul id="todo-list" class="list-group">
+            <!-- To-Do items will be appended here by JavaScript -->
+        </ul>
+        <div class="input-group mt-3">
+            <input type="text" id="new-todo" class="form-control" placeholder="Add new todo">
+            <button id="add-todo-btn" class="btn btn-primary">Add</button>
+        </div>
 
-<h1>Simple To-Do List</h1>
+        <script>
+            async function fetchTodos() {
+                const response = await fetch('/');
+                const html = await response.text();
+                document.getElementById('todo-list').innerHTML = html;
+            }
 
-<input type="text" id="taskInput" placeholder="Enter a new task">
-<button onclick="addTask()">Add Task</button>
-<ul id="taskList"></ul>
+            async function addTodo() {
+                const todo = document.getElementById('new-todo').value;
+                if (todo) {
+                    const response = await fetch('/add', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `todo=${encodeURIComponent(todo)}`
+                    });
+                    if (response.ok) {
+                        fetchTodos();
+                    }
+                }
+            }
 
-<script>
-    // Function to load all tasks
-    function loadTasks() {
-        fetch('http://localhost:5000/tasks')
-            .then(response => response.json())
-            .then(data => {
-                const taskList = document.getElementById("taskList");
-                taskList.innerHTML = '';
-                data.forEach(task => {
-                    const li = document.createElement("li");
-                    li.textContent = task;
-                    const deleteBtn = document.createElement("span");
-                    deleteBtn.textContent = " (Delete)";
-                    deleteBtn.classList.add("delete");
-                    deleteBtn.onclick = () => deleteTask(task);
-                    li.appendChild(deleteBtn);
-                    taskList.appendChild(li);
-                });
-            });
-    }
-
-    // Function to add a new task
-    function addTask() {
-        const task = document.getElementById("taskInput").value;
-        if (task) {
-            fetch('http://localhost:5000/add', {
-                method: 'POST',
-                body: JSON.stringify({ task }),
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(response => response.json())
-            .then(() => {
-                document.getElementById("taskInput").value = '';
-                loadTasks();
-            });
-        }
-    }
-
-    // Function to delete a task
-    function deleteTask(task) {
-        fetch('http://localhost:5000/delete', {
-            method: 'POST',
-            body: JSON.stringify({ task }),
-            headers: { 'Content-Type': 'application/json' }
-        })
-        .then(response => response.json())
-        .then(() => {
-            loadTasks();
-        });
-    }
-
-    // Load tasks when page is loaded
-    window.onload = loadTasks;
-</script>
-
+            document.getElementById('add-todo-btn').addEventListener('click', addTodo);
+            fetchTodos();
+        </script>
+    </div>
 </body>
 </html>
