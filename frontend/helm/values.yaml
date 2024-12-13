@@ -1,0 +1,3 @@
+frontendImage: "gcr.io/arctic-thought-443823-f6/frontend_app"
+replicaCount: 1
+servicePort: 80

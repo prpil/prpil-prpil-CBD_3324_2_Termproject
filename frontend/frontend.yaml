@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-nginx-config
+  namespace: frontend
+data:
+  nginx.conf: |
+    server {
+        listen 80;
+
+        location / {
+            root /usr/share/nginx/html;  # Serve static files from the /usr/share/nginx/html directory
+            index index.html;  # Set the index file to be served
+        }
+
+        location /api/ {  # Assuming your backend service is using /api path
+            proxy_pass http://backend-service.backend.svc.cluster.local:5000;  # Forward requests to the backend
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Port $server_port;
+            proxy_set_header X-Forwarded-Host $host;
+        }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: nginx
+        image: gcr.io/arctic-thought-443823-f6/frontend_app
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-config-volume
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        - name: static-files
+          mountPath: /usr/share/nginx/html  # Serve static files from here
+      volumes:
+      - name: nginx-config-volume
+        configMap:
+          name: frontend-nginx-config
+      - name: static-files
+        configMap:  # Mount static files from a ConfigMap (or another source, like a persistent volume)
+          name: frontend-static-files
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: frontend
+spec:
+  selector:
+    app: frontend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: NodePort
