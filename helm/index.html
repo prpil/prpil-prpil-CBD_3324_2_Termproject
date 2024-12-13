@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+
+<<<<<<< HEAD
+        #todo-list {
+=======
+        .todo-list {
+>>>>>>> 17653bf (commiting)
+            list-style-type: none;
+            padding: 0;
+        }
+
+<<<<<<< HEAD
+        #todo-list li {
+=======
+        .todo-list li {
+>>>>>>> 17653bf (commiting)
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+<<<<<<< HEAD
+        #new-todo {
+            width: calc(100% - 60px);
+            padding: 5px;
+        }
+
+        #add-todo-btn {
+            width: 50px;
+            padding: 5px;
+=======
+        .todo-list input[type="text"] {
+            flex: 1;
+            padding: 5px;
+        }
+
+        .todo-list button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+        }
+
+        .todo-list button:hover {
+            background-color: #0056b3;
+>>>>>>> 17653bf (commiting)
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Todo List</h1>
+<<<<<<< HEAD
+        <ul id="todo-list" class="list-group">
+            <!-- To-Do items will be appended here by JavaScript -->
+        </ul>
+        <div class="input-group mt-3">
+            <input type="text" id="new-todo" class="form-control" placeholder="Add new todo">
+            <button id="add-todo-btn" class="btn btn-primary">Add</button>
+        </div>
+
+        <script>
+            async function fetchTodos() {
+                const response = await fetch('/');
+                const html = await response.text();
+                document.getElementById('todo-list').innerHTML = html;
+            }
+
+            async function addTodo() {
+                const todo = document.getElementById('new-todo').value;
+                if (todo) {
+                    const response = await fetch('/add', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `todo=${encodeURIComponent(todo)}`
+                    });
+                    if (response.ok) {
+                        fetchTodos();
+                    }
+                }
+            }
+
+            document.getElementById('add-todo-btn').addEventListener('click', addTodo);
+            fetchTodos();
+        </script>
+    </div>
+</body>
+</html>
+=======
+        <ul class="todo-list">
+            {% for todo in todos %}
+                <li>
+                    <span>{{ todo }}</span>
+                    <form action="/delete/{{ loop.index0 }}" method="post" style="display:inline;">
+                        <button type="submit">Delete</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+        <form action="/add" method="post" class="input-group mt-3">
+            <input type="text" name="todo" class="form-control" placeholder="Add new todo">
+            <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+    </div>
+</body>
+</html>
+>>>>>>> 17653bf (commiting)

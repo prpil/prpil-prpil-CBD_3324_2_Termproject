@@ -10,4 +10,4 @@ spec:
   - protocol: TCP
     port: {{ .Values.servicePort }}
     targetPort: {{ .Values.servicePort }}
-  type: NodePort
+  type: LoadBalancer
